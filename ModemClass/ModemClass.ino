@@ -34,6 +34,7 @@ SoftwareSerial _LoRaSerial(2,3);
  * LoRaModem.checkID() -> Retrieve the current ID parameters from the modem (updates LoRaModem.DevAddr / DevEui / AppEui)
  * LoRaModem.setID()   -> Set the ID parameters in the modem
  * LoRaModem.setKeys() -> Set the NW and App ciphering / integrity keys
+ * LoRaModem.setPort() -> Set the port # for App payloads
  * LoRaModem.cMsg()    -> Send a message, wait for an ACK
  * LoRaModem.Msg()     -> Send a message, no ACK (uplink only)
  * LoRaModem.Reset()   -> Reset the modem. This is useful if it hangs, sometimes happens after sending a few hundred messages
@@ -51,6 +52,7 @@ class LoRaModem
     int checkID();
     int setID(String addr, String dev, String app);
     int setKeys(String NWKey, String AppKey);
+    int setPort(String portNum);
     int cMsg(String message);
     int Msg(String message);
     int Reset();
@@ -199,6 +201,18 @@ int LoRaModem::setKeys(String NWSKey, String AppSKey){
   
 };
 
+// Set the payload port #
+int LoRaModem::setPort(String portNum){
+  _sendSerial("AT+PORT=" + portNum);
+  if (_checkresponse("%+PORT: OK.+", rx_timeout_fast))
+  {
+    return 1;
+  }
+
+  return 0;
+  
+};
+
 // Send a message, expect an ACK
 int LoRaModem::cMsg(String message){
   _sendSerial("AT+CMSG=\"" + message + "\"");
@@ -291,19 +305,20 @@ void loop() // run over and over
   //modem.setID(idDevAddr, idDevEui, idAppEui);
   //modem.checkID();
 
+  //modem.setPort("1");
+    
   //modem.setKeys(idNwSKey, idAppSKey);
-  
-  //modem.cMsg("130,10");
-  //modem.cMsg(" ");
-  
+   
   //modem.Reset();
 
   //DEBUG_PRINT(modem.modemResp);
   
   for (;;){
-    modem.cMsg(" ");
+    modem.cMsg("Hello World");
     
-    DEBUG_PRINT( modem.getAscii() );
+    // DEBUG_PRINT( modem.getAscii() );
     delay(5000);
     };
+
+  
 }
