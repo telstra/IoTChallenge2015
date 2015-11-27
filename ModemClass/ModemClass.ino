@@ -8,15 +8,14 @@
 // Remove this define to keep the USB comms quiet
 #define DEBUG
 
-#define rx_timeout 3000
+#define rx_timeout 8000
 #define rx_timeout_fast 500
-#define rx_buffer 400
+#define rx_buffer 200
 
-#define idDevAddr "01 ba 10 88"
-#define idDevEui "47 97 c5 34 00 25 00 2f"
-#define idAppEui "00 00 00 00 00 00 00 00"
-#define idNwSKey "2B 7E 15 16 28 AE D2 A6 AB F7 15 88 09 CF 4F 3C"
-#define idAppSKey "2B 7E 15 16 28 AE D2 A6 AB F7 15 88 09 CF 4F 3C"
+#define idDevAddr "bb 49 10 00"
+#define idDevEui "11 11 11 11 bb 49 10 00"
+#define idNwSKey "7B 98 20 5A CA 2D B4 F4 A6 1C 73 BB 3A C5 C5 A6"
+#define idAppSKey "CF B9 90 F6 21 C6 B6 9A D0 A9 8D 23 F7 D1 9D 4A"
 
 #ifdef DEBUG
  #define DEBUG_PRINT(x)  Serial.println (x)
@@ -50,7 +49,7 @@ class LoRaModem
     LoRaModem();
     int checkAT();
     int checkID();
-    int setID(String addr, String dev, String app);
+    int setID(String addr, String dev);
     int setKeys(String NWKey, String AppKey);
     int setPort(String portNum);
     int cMsg(String message);
@@ -72,6 +71,7 @@ class LoRaModem
 
 LoRaModem::LoRaModem()
 {
+  _LoRaSerial.begin(9600);
   _LoRaSerial.setTimeout(100);
 };
 
@@ -162,7 +162,7 @@ int LoRaModem::checkID(){
 };
 
 // Set the modem ID
-int LoRaModem::setID(String addr, String dev, String app){
+int LoRaModem::setID(String addr, String dev){
   _sendSerial("AT+ID=DevAddr,\"" + addr + "\"");
   if (_checkresponse("%+ID: DEVADDR .+", rx_timeout_fast))
   {
@@ -175,11 +175,6 @@ int LoRaModem::setID(String addr, String dev, String app){
     return 1;
   }
 
-  _sendSerial("AT+ID=AppEui,\"" + app + "\"");
-  if (_checkresponse("%+ID: APPEUI .+", rx_timeout_fast))
-  {
-    return 1;
-  }
   return 0;
 };
 
@@ -279,6 +274,8 @@ String LoRaModem::getAscii(){
  * Normal Arduino stuff starts here.
  */
 
+LoRaModem modem;
+
 void setup()
 {
   #ifdef DEBUG
@@ -290,7 +287,15 @@ void setup()
   
   DEBUG_PRINT("Connected");
 
-  _LoRaSerial.begin(9600);
+  modem.Reset();
+  delay(1000);
+  modem.setPort("1");
+  delay(1000);
+  
+  modem.setID(idDevAddr, idDevEui);
+  delay(1000);
+  modem.setKeys(idNwSKey, idAppSKey);
+  
   
 }
 
@@ -298,27 +303,9 @@ void setup()
 
 void loop() // run over and over
 {
-
-  LoRaModem modem;
-    
-  //modem.checkAT();
-  //modem.setID(idDevAddr, idDevEui, idAppEui);
-  //modem.checkID();
-
-  //modem.setPort("1");
-    
-  //modem.setKeys(idNwSKey, idAppSKey);
-   
-  //modem.Reset();
-
-  //DEBUG_PRINT(modem.modemResp);
   
-  for (;;){
-    modem.cMsg("Hello World");
-    
-    // DEBUG_PRINT( modem.getAscii() );
-    delay(5000);
-    };
-
+  modem.cMsg("100,123.45");
   
+  delay(1000); 
+
 }
