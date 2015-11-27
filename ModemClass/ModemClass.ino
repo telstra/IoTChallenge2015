@@ -3,7 +3,11 @@
  */
  
 #include <SoftwareSerial.h>
-#include <Regexp.h> // gammon.com.au/Arduino/Regexp.zip
+// To have the Regexp.h line below work, firstly
+// 1) Download the file http://gammon.com.au/Arduino/Regexp.zip
+// 2) Within the Arduino IDE, use Sketch > Include Library > Add .ZIP Library
+//    and select the Regexp.zip file you just downloaded
+#include <Regexp.h>
 
 // Remove this define to keep the USB comms quiet
 #define DEBUG
