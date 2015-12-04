@@ -8,7 +8,7 @@
 #include <TinyGPS.h> // https://www.dfrobot.com/wiki/index.php?title=GPS_Module_With_Enclosure_%28SKU:TEL0094%29
 #include <Adafruit_SleepyDog.h>
 
-SoftwareSerial GPSSerial(4, 5); // RX, TX
+SoftwareSerial GPSSerial(5, 4); // RX, TX
 TinyGPS gps;
 
 // Variables for the GPS readings
