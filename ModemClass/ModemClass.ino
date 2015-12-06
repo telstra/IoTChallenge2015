@@ -59,6 +59,8 @@ class LoRaModem
     int cMsg(String message);
     int Msg(String message);
     int Reset();
+    int Sleep();
+    int Wake();
 
     String getAscii();
     
@@ -241,6 +243,28 @@ int LoRaModem::Reset(){
   _sendSerial("AT+RESET");
 
   if (_checkresponse(".+RESET: OK.+ 1.7.1"))
+  {
+    return 1;
+  }
+  return 0;
+}
+
+// Put modem into low power state
+int LoRaModem::Sleep(){
+  _sendSerial("AT+LOWPOWER");
+
+  if (_checkresponse("%+LOWPOWER: SLEEP"))
+  {
+    return 1;
+  }
+  return 0;
+}
+
+// Wake up the modem after sleep
+int LoRaModem::Wake(){
+  _sendSerial("A");
+  delay(10);  
+  if (_checkresponse("%+LOWPOWER: WAKEUP"))
   {
     return 1;
   }
